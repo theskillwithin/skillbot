@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 "use strict";
 require("dotenv").config({ path: ".env" });
 const irc = require("irc");
