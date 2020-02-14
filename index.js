@@ -1,11 +1,19 @@
 "use strict";
-
+require("dotenv").config({ path: ".env" });
 const irc = require("irc");
 const client = new irc.Client("chat.freenode.net", "skillbot", {
   channels: ["#theskillwithin"]
 });
 
-client.join("#theskillwithin");
+const register = () => {
+  client.say("NickServ", `IDENTIFY skillbot ${process.env.IDENTIFY}`);
+
+  setTimeout(() => {
+    client.join("#theskillwithin");
+  }, 5000);
+};
+
+client.addListener("registered", register);
 
 client.addListener("message#theskillwithin", function(from, message) {
   if (/\u037E/g.test(message)) {

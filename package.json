@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/theskillwithin/skillbot#readme",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "irc": "^0.5.2"
   }
 }
