@@ -10,12 +10,22 @@ const register = () => {
 
   setTimeout(() => {
     client.join("#theskillwithin");
+    client.join("##javascript");
   }, 5000);
 };
 
 client.addListener("registered", register);
 
 client.addListener("message#theskillwithin", function(from, message) {
+  if (/\u037E/g.test(message)) {
+    client.say(
+      "#theskillwithin",
+      `Warning! ${from}: You have used a greek question mark(u037E) instead of a semicolon(u003B)!`
+    );
+  }
+});
+
+client.addListener("message##javascript", function(from, message) {
   if (/\u037E/g.test(message)) {
     client.say(
       "#theskillwithin",
