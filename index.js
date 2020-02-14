@@ -1,7 +1,7 @@
 "use strict";
 
-var irc = require("irc");
-var client = new irc.Client("chat.freenode.net", "skillbot", {
+const irc = require("irc");
+const client = new irc.Client("chat.freenode.net", "skillbot", {
   channels: ["#theskillwithin"]
 });
 
