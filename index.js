@@ -8,7 +8,6 @@ const client = new irc.Client("chat.freenode.net", "skillbot", {
 client.join("#theskillwithin");
 
 client.addListener("message#theskillwithin", function(from, message) {
-  console.log(from + " => #theskillwithin: " + message);
   if (/\u037E/g.test(message)) {
     client.say(
       "#theskillwithin",
