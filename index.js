@@ -29,7 +29,7 @@ client.addListener("message#theskillwithin", function(from, message) {
 client.addListener("message##javascript", function(from, message) {
   if (/\u037E/g.test(message)) {
     client.say(
-      "#theskillwithin",
+      "##javascript",
       `Warning! ${from}: You have used a greek question mark(u037E) instead of a semicolon(u003B)!`
     );
   }
