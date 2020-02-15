@@ -12,7 +12,7 @@ const register = () => {
   setTimeout(() => {
     client.join("#theskillwithin");
     client.join("##javascript");
-  }, 5000);
+  }, 10000);
 };
 
 client.addListener("registered", register);
