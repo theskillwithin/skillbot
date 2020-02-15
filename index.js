@@ -11,7 +11,7 @@ const register = () => {
 
   setTimeout(() => {
     client.join("#theskillwithin");
-    // client.join("##javascript");
+    client.join("##javascript");
   }, 10000);
 };
 
@@ -26,11 +26,11 @@ client.addListener("message#theskillwithin", function(from, message) {
   }
 });
 
-// client.addListener("message##javascript", function(from, message) {
-//   if (/\u037E/g.test(message)) {
-//     client.say(
-//       "##javascript",
-//       `Warning! ${from}: You have used a greek question mark(u037E) instead of a semicolon(u003B)!`
-//     );
-//   }
-// });
+client.addListener("message##javascript", function(from, message) {
+  if (/\u037E/g.test(message)) {
+    client.say(
+      "##javascript",
+      `Warning! ${from}: You have used a greek question mark(u037E) instead of a semicolon(u003B)!`
+    );
+  }
+});
