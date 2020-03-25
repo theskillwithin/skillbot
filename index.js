@@ -13,7 +13,7 @@ const register = () => {
 
   setTimeout(() => {
     client.join("#theskillwithin");
-    // client.join("##javascript");
+    client.join("##javascript");
   }, 10000);
 };
 
@@ -45,23 +45,34 @@ function getYoutubeId(message) {
 }
 
 const youtubeURL = id =>
-  `https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&id=${id}=${process.env.YOUTUBE}`;
+  `https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&id=${id}&key=${process.env.YOUTUBE}`;
 
-const rickRoll = async (from, message) => {
+const rickRoll = async (from, message, channel) => {
   const id = getYoutubeId(message);
   if (id) {
-    await fetch(youtubeURL(id)).then(res => {
-      const title = get(res, "items[0].snippet.title", false);
-      if (/Rick Astley/gi.test(title)) {
-        client.say(
-          "#theskillwithin",
-          `Warning! ${from}: That video may possible be a rick roll!`
-        );
+    await fetch(youtubeURL(id), {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
       }
-    });
+    })
+      .then(r => r.json())
+      .then(res => {
+        const title = get(res, "items[0].snippet.title", false);
+        if (/Rick Astley/gi.test(title)) {
+          client.say(
+            channel,
+            `Warning! ${from}: That video may possibly be a Rick Roll!`
+          );
+        }
+      });
   }
 };
 
 client.addListener("message#theskillwithin", (from, message) =>
-  rickRoll(from, message)
+  rickRoll(from, message, "#theskillwithin")
+);
+
+client.addListener("message##javascript", (from, message) =>
+  rickRoll(from, message, "##javascript")
 );
