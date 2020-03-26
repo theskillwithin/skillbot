@@ -67,7 +67,7 @@ client.addListener("message#theskillwithin", (from, message) => {
 });
 
 client.addListener("message##javascript", (from, message) => {
-  greekQuestionMark(from, message, "#theskillwithin");
+  greekQuestionMark(from, message, "##javascript");
   rickRoll(from, message, "##javascript");
 });
 
