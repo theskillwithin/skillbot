@@ -5,7 +5,9 @@ const irc = require("irc");
 const fetch = require("node-fetch");
 const get = require("lodash/get");
 const client = new irc.Client("chat.freenode.net", "skillbot", {
-  channels: ["#theskillwithin"]
+  channels: ["#theskillwithin"],
+  userName: "skillbot",
+  realName: "skillbot"
 });
 
 const register = () => {
@@ -19,24 +21,14 @@ const register = () => {
 
 client.addListener("registered", register);
 
-client.addListener("message#theskillwithin", function(from, message) {
+const greekQuestionMark = (from, message, channel) => {
   if (/\u037E/g.test(message)) {
     client.say(
-      "#theskillwithin",
-      `Warning! ${from}: You have used a greek question mark(u037E) instead of a semicolon(u003B)!`
-    );
-    ``;
-  }
-});
-
-client.addListener("message##javascript", function(from, message) {
-  if (/\u037E/g.test(message)) {
-    client.say(
-      "##javascript",
+      channel,
       `Warning! ${from}: You have used a greek question mark(u037E) instead of a semicolon(u003B)!`
     );
   }
-});
+};
 
 function getYoutubeId(message) {
   const regexp = /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)(?<id>([\w\-]+)(\S+)?)/g;
@@ -69,10 +61,16 @@ const rickRoll = async (from, message, channel) => {
   }
 };
 
-client.addListener("message#theskillwithin", (from, message) =>
-  rickRoll(from, message, "#theskillwithin")
-);
+client.addListener("message#theskillwithin", (from, message) => {
+  greekQuestionMark(from, message, "#theskillwithin");
+  rickRoll(from, message, "#theskillwithin");
+});
 
-client.addListener("message##javascript", (from, message) =>
-  rickRoll(from, message, "##javascript")
-);
+client.addListener("message##javascript", (from, message) => {
+  greekQuestionMark(from, message, "#theskillwithin");
+  rickRoll(from, message, "##javascript");
+});
+
+client.addListener("pm", function(from, message) {
+  client.say("#theskillwithin", `${from}: ${message}`);
+});
