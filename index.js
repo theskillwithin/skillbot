@@ -7,7 +7,7 @@ const get = require("lodash/get");
 const client = new irc.Client("chat.freenode.net", "skillbot", {
   channels: ["#theskillwithin"],
   userName: "skillbot",
-  realName: "skillbot"
+  realName: "skillbot",
 });
 
 const register = () => {
@@ -36,7 +36,7 @@ function getYoutubeId(message) {
   return exec && exec.groups && exec.groups.id;
 }
 
-const youtubeURL = id =>
+const youtubeURL = (id) =>
   `https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&id=${id}&key=${process.env.YOUTUBE}`;
 
 const rickRoll = async (from, message, channel) => {
@@ -45,11 +45,11 @@ const rickRoll = async (from, message, channel) => {
     await fetch(youtubeURL(id), {
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+      },
     })
-      .then(r => r.json())
-      .then(res => {
+      .then((r) => r.json())
+      .then((res) => {
         const title = get(res, "items[0].snippet.title", false);
         if (/Rick Astley/gi.test(title)) {
           client.say(
@@ -71,6 +71,10 @@ client.addListener("message##javascript", (from, message) => {
   rickRoll(from, message, "##javascript");
 });
 
-client.addListener("pm", function(from, message) {
+client.addListener("pm", function (from, message) {
   client.say("#theskillwithin", `${from}: ${message}`);
+});
+
+client.addListener("error", (message) => {
+  console.error("IRC Error: ", message);
 });
