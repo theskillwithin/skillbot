@@ -39,7 +39,7 @@ function getYoutubeId(message) {
 const youtubeURL = (id) =>
   `https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&id=${id}&key=${process.env.YOUTUBE}`;
 
-const rickRoll = async (from, message, channel) => {
+const youtubeTitle = async (from, message, channel) => {
   const id = getYoutubeId(message);
   if (id) {
     await fetch(youtubeURL(id), {
@@ -54,24 +54,24 @@ const rickRoll = async (from, message, channel) => {
         if (title) {
           client.say(channel, `youtube title: ${title}`);
         }
-        if (/Rick Astley/gi.test(title)) {
-          client.say(
-            channel,
-            `Warning! ${from}: That video may possibly be a Rick Roll!`
-          );
-        }
+        // if (/Rick Astley/gi.test(title)) {
+        //   client.say(
+        //     channel,
+        //     `Warning! ${from}: That video may possibly be a Rick Roll!`
+        //   );
+        // }
       });
   }
 };
 
 client.addListener("message#theskillwithin", (from, message) => {
   greekQuestionMark(from, message, "#theskillwithin");
-  rickRoll(from, message, "#theskillwithin");
+  youtubeTitle(from, message, "#theskillwithin");
 });
 
 client.addListener("message##javascript", (from, message) => {
   greekQuestionMark(from, message, "##javascript");
-  rickRoll(from, message, "##javascript");
+  youtubeTitle(from, message, "##javascript");
 });
 
 client.addListener("pm", function (from, message) {
