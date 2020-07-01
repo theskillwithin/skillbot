@@ -52,7 +52,7 @@ const rickRoll = async (from, message, channel) => {
       .then((res) => {
         const title = get(res, "items[0].snippet.title", false);
         if (title) {
-          client.say(channel, `yt title: ${title}`);
+          client.say(channel, `youtube title: ${title}`);
         }
         if (/Rick Astley/gi.test(title)) {
           client.say(
