@@ -66,15 +66,15 @@ const youtubeTitle = async (from, message, channel) => {
 };
 
 const calcWeight = (from, message, channel) => {
-  if (message.match(/KelosToPounds (.*)/)) {
-    const kilos = parseInt(message.match(/KelosToPounds (.*)/)[1]);
+  if (message.match(/KelosToPounds (.*)/gi)) {
+    const kilos = parseInt(message.match(/KelosToPounds (.*)/gi)[1]);
 
     const pounds = parseInt(kilos * 2.20462);
     client.say(channel, `Kelos ${kilos} to pounds: ${pounds}`);
   }
 
-  if (message.match(/PoundsToKelos (.*)/)) {
-    const pounds = parseInt(message.match(/PoundsToKelos (.*)/)[1]);
+  if (message.match(/PoundsToKelos (.*)/gi)) {
+    const pounds = parseInt(message.match(/PoundsToKelos (.*)/gi)[1]);
 
     const kilos = parseInt(pounds / 2.20462);
     client.say(channel, `Pounds ${pounds} to kilos: ${kilos}`);
