@@ -66,18 +66,31 @@ const youtubeTitle = async (from, message, channel) => {
 };
 
 const calcWeight = (from, message, channel) => {
-  if (message.match(/KilosToPounds (.*)/)) {
-    const kilos = parseInt(message.match(/KilosToPounds (.*)/)[1]);
+  if (message.charAt(0) === ">") {
+    const matchKilosToPounds = message.match(/^>k2p (\d{1,9}?[.]?\d{0,4})$/);
+    if (matchKilosToPounds) {
+      const kilos = parseFloat(matchKilosToPounds[1]);
 
-    const pounds = parseInt(kilos * 2.20462);
-    client.say(channel, `Kilos ${kilos} to pounds: ${pounds}`);
-  }
+      const pounds = kilos * 2.20462;
+      const roundPounds = Math.round(pounds * 100) / 100;
+      return client.say(
+        channel,
+        `${kilos} kilos is about ${roundPounds} pounds`
+      );
+    }
 
-  if (message.match(/PoundsToKilos (.*)/)) {
-    const pounds = parseInt(message.match(/PoundsToKilos (.*)/)[1]);
+    const matchPoundsToKilos = message.match(/^>p2k (\d{1,9}?[.]?\d{0,4})$/);
 
-    const kilos = parseInt(pounds / 2.20462);
-    client.say(channel, `Pounds ${pounds} to kilos: ${kilos}`);
+    if (matchPoundsToKilos) {
+      const pounds = matchPoundsToKilos[1];
+
+      const kilos = pounds / 2.20462;
+      const roundKilos = Math.round(kilos * 100) / 100;
+      return client.say(
+        channel,
+        `${pounds} pounds is about ${roundKilos} kilos`
+      );
+    }
   }
 };
 
@@ -93,8 +106,7 @@ client.addListener("message##javascript", (from, message) => {
 });
 
 client.addListener("message#ketochat", (from, message) => {
-  greekQuestionMark(from, message, "##javascript");
-  youtubeTitle(from, message, "##javascript");
+  youtubeTitle(from, message, "#ketochat");
   calcWeight(from, message, "#ketochat");
 });
 
