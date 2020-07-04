@@ -65,17 +65,42 @@ const youtubeTitle = async (from, message, channel) => {
   }
 };
 
+const isModToHalf = (number) => {
+  const mod = number % 1;
+
+  const isModToHalf = mod > 0.25 && mod < 0.75;
+
+  return isModToHalf;
+};
+
+const isModToQuarterUp = (number) => {
+  const mod = number % 1;
+
+  const isModToQuarterUp = mod > 0.75;
+
+  return isModToQuarterUp;
+};
+
 const calcWeight = (from, message, channel) => {
   if (message.charAt(0) === ">") {
+    const kiloPoundsConversionNumber = 2.20462;
+
     const matchKilosToPounds = message.match(/^>k2p (\d{1,9}?[.]?\d{0,4})$/);
+
     if (matchKilosToPounds) {
       const kilos = parseFloat(matchKilosToPounds[1]);
 
-      const pounds = kilos * 2.20462;
-      const roundPounds = Math.round(pounds * 100) / 100;
+      const pounds = kilos * kiloPoundsConversionNumber;
+
+      const isPoundsModToHalf = isModToHalf(pounds);
+      const isPoundsModToQuaterUp = isModToQuarterUp(pounds);
+
+      const truncPounds = Math.trunc(pounds);
       return client.say(
         channel,
-        `${kilos} kilos is about ${roundPounds} pounds`
+        `${kilos} kilos is about ${
+          isPoundsModToQuaterUp ? truncPounds + 1 : truncPounds
+        }${isPoundsModToHalf ? " and a half" : ""} pounds`
       );
     }
 
@@ -84,11 +109,48 @@ const calcWeight = (from, message, channel) => {
     if (matchPoundsToKilos) {
       const pounds = matchPoundsToKilos[1];
 
-      const kilos = pounds / 2.20462;
-      const roundKilos = Math.round(kilos * 100) / 100;
+      const kilos = pounds / kiloPoundsConversionNumber;
+
+      const isKilosModToHalf = isModToHalf(kilos);
+      const isKilosModToQuaterUp = isModToQuarterUp(kilos);
+
+      const truncKilos = Math.trunc(kilos);
       return client.say(
         channel,
-        `${pounds} pounds is about ${roundKilos} kilos`
+        `${pounds} pounds is about ${
+          isKilosModToQuaterUp ? truncKilos + 1 : truncKilos
+        }${isKilosModToHalf ? " and a half" : ""} kilos`
+      );
+    }
+
+    // more precise measurments (expiramental)
+
+    const matchKilosToPoundsExact = message.match(
+      /^>k2p! (\d{1,9}?[.]?\d{0,4})$/
+    );
+    if (matchKilosToPoundsExact) {
+      const kilosExact = parseFloat(matchKilosToPoundsExact[1]);
+
+      const poundsExact = kilosExact * kiloPoundsConversionNumber;
+      const roundPoundsExact = Math.round(poundsExact * 100) / 100;
+      return client.say(
+        channel,
+        `${kilosExact} kilos is about ${roundPoundsExact} pounds`
+      );
+    }
+
+    const matchPoundsToKilosExact = message.match(
+      /^>p2k! (\d{1,9}?[.]?\d{0,4})$/
+    );
+
+    if (matchPoundsToKilosExact) {
+      const poundsExact = matchPoundsToKilosExact[1];
+
+      const kilosExact = poundsExact / kiloPoundsConversionNumber;
+      const roundKilosExact = Math.round(kilosExact * 100) / 100;
+      return client.say(
+        channel,
+        `${poundsExact} pounds is about ${roundKilosExact} kilos`
       );
     }
   }
