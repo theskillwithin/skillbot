@@ -16,6 +16,7 @@ const register = () => {
   setTimeout(() => {
     client.join("#theskillwithin");
     client.join("##javascript");
+    client.join("#ketochat");
   }, 10000);
 };
 
@@ -64,14 +65,37 @@ const youtubeTitle = async (from, message, channel) => {
   }
 };
 
+const calcWeight = (from, message, channel) => {
+  if (message.match(/KelosToPounds (.*)/)) {
+    const kilos = parseInt(message.match(/KelosToPounds (.*)/));
+
+    const pounds = parseInt(kilos * 2.20462);
+    client.say(channel, `Kelos ${kilos} to pounds: ${pounds}`);
+  }
+
+  if (message.match(/PoundsToKelos (.*)/)) {
+    const pounds = parseInt(message.match(/PoundsToKelos (.*)/));
+
+    const kilos = parseInt(pounds / 2.20462);
+    client.say(channel, `Pounds ${pounds} to kilos: ${kilos}`);
+  }
+};
+
 client.addListener("message#theskillwithin", (from, message) => {
   greekQuestionMark(from, message, "#theskillwithin");
   youtubeTitle(from, message, "#theskillwithin");
+  calcWeight(from, message, "#ketochat");
 });
 
 client.addListener("message##javascript", (from, message) => {
   greekQuestionMark(from, message, "##javascript");
   youtubeTitle(from, message, "##javascript");
+});
+
+client.addListener("message#ketochat", (from, message) => {
+  greekQuestionMark(from, message, "##javascript");
+  youtubeTitle(from, message, "##javascript");
+  calcWeight(from, message, "#ketochat");
 });
 
 client.addListener("pm", function (from, message) {
