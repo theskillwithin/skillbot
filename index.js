@@ -84,7 +84,7 @@ const calcWeight = (from, message, channel) => {
 client.addListener("message#theskillwithin", (from, message) => {
   greekQuestionMark(from, message, "#theskillwithin");
   youtubeTitle(from, message, "#theskillwithin");
-  calcWeight(from, message, "#ketochat");
+  calcWeight(from, message, "#theskillwithin");
 });
 
 client.addListener("message##javascript", (from, message) => {
