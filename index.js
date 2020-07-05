@@ -31,11 +31,26 @@ const greekQuestionMark = (from, message, channel) => {
   }
 };
 
-function getYoutubeId(message) {
+const convertSecondsToTime = (givenSeconds) => {
+  const dateObj = new Date(givenSeconds * 1000);
+  const hours = dateObj.getUTCHours();
+  const minutes = dateObj.getUTCMinutes();
+  const seconds = dateObj.getSeconds();
+
+  const time = `${hours
+    .toString()
+    .padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+  return time;
+};
+
+const getYoutubeId = (message) => {
   const regexp = /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)(?<id>([\w\-]+)(\S+)?)/g;
   const exec = regexp.exec(message);
   return exec && exec.groups && exec.groups.id;
-}
+};
 
 const youtubeURL = (id) =>
   `https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&id=${id}&key=${process.env.YOUTUBE}`;
@@ -43,7 +58,13 @@ const youtubeURL = (id) =>
 const youtubeTitle = async (from, message, channel) => {
   const id = getYoutubeId(message);
   if (id) {
-    await fetch(youtubeURL(id), {
+    const splitTimeFromId = id.split("?t=");
+
+    const idWithoutTime = splitTimeFromId[0];
+
+    const time = splitTimeFromId[1] && convertSecondsToTime(splitTimeFromId[1]);
+
+    await fetch(youtubeURL(idWithoutTime), {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -53,7 +74,10 @@ const youtubeTitle = async (from, message, channel) => {
       .then((res) => {
         const title = get(res, "items[0].snippet.title", false);
         if (title) {
-          client.say(channel, `youtube title: ${title}`);
+          client.say(
+            channel,
+            `youtube${time ? `timestamp: ${time},` : ""} title: ${title}`
+          );
         }
         // if (/Rick Astley/gi.test(title)) {
         //   client.say(
