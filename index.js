@@ -76,7 +76,7 @@ const youtubeTitle = async (from, message, channel) => {
         if (title) {
           client.say(
             channel,
-            `youtube${time ? `timestamp: ${time},` : ""} title: ${title}`
+            `youtube${time ? ` [@timestamp: ${time}]` : ""} title: ${title}`
           );
         }
         // if (/Rick Astley/gi.test(title)) {
