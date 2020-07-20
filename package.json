@@ -19,7 +19,7 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "irc": "^0.5.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "node-fetch": "^2.6.0"
   }
 }
