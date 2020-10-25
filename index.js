@@ -17,6 +17,7 @@ const register = () => {
     client.join("#theskillwithin");
     client.join("##javascript");
     client.join("#ketochat");
+    client.join("#gatsbyjs");
   }, 10000);
 };
 
@@ -194,6 +195,11 @@ client.addListener("message##javascript", (from, message) => {
 client.addListener("message#ketochat", (from, message) => {
   youtubeTitle(from, message, "#ketochat");
   calcWeight(from, message, "#ketochat");
+});
+
+client.addListener("message#gatsbyjs", (from, message) => {
+  greekQuestionMark(from, message, "#gatsbyjs");
+  youtubeTitle(from, message, "#gatsbyjs");
 });
 
 client.addListener("pm", function (from, message) {
