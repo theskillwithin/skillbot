@@ -21,6 +21,8 @@ const register = () => {
   }, 10000);
 };
 
+const ignoreList = ["skillbot", "jellobot", "ecmabot"];
+
 client.addListener("registered", register);
 
 const greekQuestionMark = (from, message, channel) => {
@@ -32,20 +34,20 @@ const greekQuestionMark = (from, message, channel) => {
   }
 };
 
-const convertSecondsToTime = (givenSeconds) => {
-  const dateObj = new Date(givenSeconds * 1000);
-  const hours = dateObj.getUTCHours();
-  const minutes = dateObj.getUTCMinutes();
-  const seconds = dateObj.getSeconds();
+// const convertSecondsToTime = (givenSeconds) => {
+//   const dateObj = new Date(givenSeconds * 1000);
+//   const hours = dateObj.getUTCHours();
+//   const minutes = dateObj.getUTCMinutes();
+//   const seconds = dateObj.getSeconds();
 
-  const time = `${hours
-    .toString()
-    .padStart(2, "0")}:${minutes
-    .toString()
-    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+//   const time = `${hours
+//     .toString()
+//     .padStart(2, "0")}:${minutes
+//     .toString()
+//     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
-  return time;
-};
+//   return time;
+// };
 
 const getYoutubeId = (message) => {
   const regexp = /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)(?<id>([\w\-]+)(\S+)?)/g;
@@ -63,7 +65,7 @@ const youtubeTitle = async (from, message, channel) => {
 
     const idWithoutTime = splitTimeFromId[0];
 
-    const time = splitTimeFromId[1] && convertSecondsToTime(splitTimeFromId[1]);
+    // const time = splitTimeFromId[1] && convertSecondsToTime(splitTimeFromId[1]);
 
     await fetch(youtubeURL(idWithoutTime), {
       headers: {
@@ -75,10 +77,7 @@ const youtubeTitle = async (from, message, channel) => {
       .then((res) => {
         const title = get(res, "items[0].snippet.title", false);
         if (title) {
-          client.say(
-            channel,
-            `youtube${time ? ` [@timestamp: ${time}]` : ""} title: ${title}`
-          );
+          client.say(channel, `YouTube Title: ${title}`);
         }
         // if (/Rick Astley/gi.test(title)) {
         //   client.say(
@@ -182,24 +181,32 @@ const calcWeight = (from, message, channel) => {
 };
 
 client.addListener("message#theskillwithin", (from, message) => {
-  greekQuestionMark(from, message, "#theskillwithin");
-  youtubeTitle(from, message, "#theskillwithin");
-  calcWeight(from, message, "#theskillwithin");
+  if (!ignoreList.includes(from.toLowerCase())) {
+    greekQuestionMark(from, message, "#theskillwithin");
+    youtubeTitle(from, message, "#theskillwithin");
+    calcWeight(from, message, "#theskillwithin");
+  }
 });
 
 client.addListener("message##javascript", (from, message) => {
-  greekQuestionMark(from, message, "##javascript");
-  youtubeTitle(from, message, "##javascript");
+  if (!ignoreList.includes(from.toLowerCase())) {
+    greekQuestionMark(from, message, "##javascript");
+    youtubeTitle(from, message, "##javascript");
+  }
 });
 
 client.addListener("message#ketochat", (from, message) => {
-  youtubeTitle(from, message, "#ketochat");
-  calcWeight(from, message, "#ketochat");
+  if (!ignoreList.includes(from.toLowerCase())) {
+    youtubeTitle(from, message, "#ketochat");
+    calcWeight(from, message, "#ketochat");
+  }
 });
 
 client.addListener("message#gatsbyjs", (from, message) => {
-  greekQuestionMark(from, message, "#gatsbyjs");
-  youtubeTitle(from, message, "#gatsbyjs");
+  if (!ignoreList.includes(from.toLowerCase())) {
+    greekQuestionMark(from, message, "#gatsbyjs");
+    youtubeTitle(from, message, "#gatsbyjs");
+  }
 });
 
 client.addListener("pm", function (from, message) {
