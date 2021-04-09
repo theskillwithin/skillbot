@@ -18,6 +18,7 @@ const register = () => {
     client.join("##javascript");
     client.join("#ketochat");
     client.join("#gatsbyjs");
+    client.join("#nextjs");
   }, 10000);
 };
 
