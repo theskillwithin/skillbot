@@ -209,6 +209,13 @@ client.addListener("message#gatsbyjs", (from, message) => {
   }
 });
 
+client.addListener("message#nextjs", (from, message) => {
+  if (!ignoreList.includes(from.toLowerCase())) {
+    greekQuestionMark(from, message, "#nextjs");
+    youtubeTitle(from, message, "#nextjs");
+  }
+});
+
 client.addListener("pm", function (from, message) {
   client.say("#theskillwithin", `${from}: ${message}`);
 });
