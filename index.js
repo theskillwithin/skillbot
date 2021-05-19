@@ -41,8 +41,8 @@ const registerLibra = () => {
 
 const ignoreList = ["skillbot", "jellobot", "ecmabot"];
 
-client.addListener("registered", register());
-clientLibera.addListener("registered", registerLibra());
+client.addListener("registered", register);
+clientLibera.addListener("registered", registerLibra);
 
 const greekQuestionMark = (from, message, channel, c) => {
   if (/\u037E/g.test(message)) {
