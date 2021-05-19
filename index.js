@@ -269,3 +269,7 @@ clientLibera.addListener("pm", function (from, message) {
 client.addListener("error", (message) => {
   console.error("IRC Error: ", message);
 });
+
+clientLibera.addListener("error", (message) => {
+  console.error("IRC Error: ", message);
+});
