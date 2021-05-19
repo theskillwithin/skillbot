@@ -16,7 +16,7 @@ const clientLibera = new irc.Client("irc.libera.chat", "skillbot", {
   realName: "skillbot",
 });
 
-const register = (c) => {
+const register = () => {
   client.say("NickServ", `IDENTIFY skillbot ${process.env.IDENTIFY}`);
 
   setTimeout(() => {
