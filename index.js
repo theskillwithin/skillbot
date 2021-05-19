@@ -17,21 +17,32 @@ const clientLibera = new irc.Client("irc.libera.chat", "skillbot", {
 });
 
 const register = (c) => {
-  c.say("NickServ", `IDENTIFY skillbot ${process.env.IDENTIFY}`);
+  client.say("NickServ", `IDENTIFY skillbot ${process.env.IDENTIFY}`);
 
   setTimeout(() => {
-    c.join("#theskillwithin");
-    c.join("##javascript");
-    c.join("#ketochat");
-    c.join("#gatsbyjs");
-    c.join("#nextjs");
+    client.join("#theskillwithin");
+    client.join("##javascript");
+    client.join("#ketochat");
+    client.join("#gatsbyjs");
+    client.join("#nextjs");
+  }, 10000);
+};
+const registerLibra = () => {
+  clientLibera.say("NickServ", `IDENTIFY skillbot ${process.env.IDENTIFY}`);
+
+  setTimeout(() => {
+    clientLibera.join("#theskillwithin");
+    clientLibera.join("##javascript");
+    clientLibera.join("#ketochat");
+    clientLibera.join("#gatsbyjs");
+    clientLibera.join("#nextjs");
   }, 10000);
 };
 
 const ignoreList = ["skillbot", "jellobot", "ecmabot"];
 
-client.addListener("registered", register(client));
-clientLibera.addListener("registered", register(clientLibera));
+client.addListener("registered", register());
+clientLibera.addListener("registered", registerLibra());
 
 const greekQuestionMark = (from, message, channel, c) => {
   if (/\u037E/g.test(message)) {
