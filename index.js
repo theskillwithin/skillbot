@@ -225,8 +225,8 @@ clientLibera.addListener("message#theskillwithin", (from, message) => {
 
 clientLibera.addListener("message##ketochat", (from, message) => {
   if (!ignoreList.includes(from.toLowerCase())) {
-    youtubeTitle(from, message, "#ketochat", clientLibera);
-    calcWeight(from, message, "#ketochat", clientLibera);
+    youtubeTitle(from, message, "##ketochat", clientLibera);
+    calcWeight(from, message, "##ketochat", clientLibera);
   }
 });
 
