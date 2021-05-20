@@ -33,7 +33,7 @@ const registerLibra = () => {
   setTimeout(() => {
     clientLibera.join("#theskillwithin");
     clientLibera.join("##javascript");
-    clientLibera.join("#ketochat");
+    clientLibera.join("##ketochat");
     clientLibera.join("#gatsbyjs");
     clientLibera.join("#nextjs");
   }, 10000);
