@@ -22,7 +22,7 @@ const register = () => {
   setTimeout(() => {
     client.join("#theskillwithin");
     client.join("##javascript");
-    client.join("##ketochat");
+    client.join("#ketochat");
     client.join("#gatsbyjs");
     client.join("#nextjs");
   }, 10000);
@@ -237,10 +237,10 @@ clientLibera.addListener("message#javascript", (from, message) => {
   }
 });
 
-client.addListener("message##ketochat", (from, message) => {
+client.addListener("message#ketochat", (from, message) => {
   if (!ignoreList.includes(from.toLowerCase())) {
-    youtubeTitle(from, message, "##ketochat", client);
-    calcWeight(from, message, "##ketochat", client);
+    youtubeTitle(from, message, "#ketochat", client);
+    calcWeight(from, message, "#ketochat", client);
   }
 });
 
