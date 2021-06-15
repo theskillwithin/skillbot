@@ -21,7 +21,7 @@ const register = () => {
 
   setTimeout(() => {
     client.join("#theskillwithin");
-    client.join("##javascript");
+    client.join("#javascript");
     client.join("#ketochat");
     client.join("#gatsbyjs");
     client.join("#nextjs");
@@ -208,10 +208,10 @@ client.addListener("message#theskillwithin", (from, message) => {
   }
 });
 
-client.addListener("message##javascript", (from, message) => {
+client.addListener("message#javascript", (from, message) => {
   if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "##javascript", client);
-    youtubeTitle(from, message, "##javascript", client);
+    greekQuestionMark(from, message, "#javascript", client);
+    youtubeTitle(from, message, "#javascript", client);
   }
 });
 
