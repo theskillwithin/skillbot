@@ -4,11 +4,6 @@ require("dotenv").config({ path: ".env" });
 const irc = require("irc");
 const fetch = require("node-fetch");
 const get = require("lodash/get");
-const client = new irc.Client("chat.freenode.net", "skillbot", {
-  channels: ["#theskillwithin"],
-  userName: "skillbot",
-  realName: "skillbot",
-});
 
 const clientLibera = new irc.Client("irc.libera.chat", "skillbot", {
   channels: ["#theskillwithin"],
@@ -16,17 +11,6 @@ const clientLibera = new irc.Client("irc.libera.chat", "skillbot", {
   realName: "skillbot",
 });
 
-const register = () => {
-  client.say("NickServ", `IDENTIFY skillbot ${process.env.IDENTIFY}`);
-
-  setTimeout(() => {
-    client.join("#theskillwithin");
-    client.join("#javascript");
-    client.join("#ketochat");
-    client.join("#gatsbyjs");
-    client.join("#nextjs");
-  }, 10000);
-};
 const registerLibra = () => {
   clientLibera.say("NickServ", `IDENTIFY skillbot ${process.env.IDENTIFY}`);
 
@@ -41,7 +25,6 @@ const registerLibra = () => {
 
 const ignoreList = ["skillbot", "jellobot", "ecmabot"];
 
-client.addListener("registered", register);
 clientLibera.addListener("registered", registerLibra);
 
 const greekQuestionMark = (from, message, channel, c) => {
@@ -200,21 +183,6 @@ const calcWeight = (from, message, channel, c) => {
   }
 };
 
-client.addListener("message#theskillwithin", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#theskillwithin", client);
-    youtubeTitle(from, message, "#theskillwithin", client);
-    calcWeight(from, message, "#theskillwithin", client);
-  }
-});
-
-client.addListener("message#javascript", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#javascript", client);
-    youtubeTitle(from, message, "#javascript", client);
-  }
-});
-
 clientLibera.addListener("message#theskillwithin", (from, message) => {
   if (!ignoreList.includes(from.toLowerCase())) {
     greekQuestionMark(from, message, "#theskillwithin", clientLibera);
@@ -237,37 +205,8 @@ clientLibera.addListener("message#javascript", (from, message) => {
   }
 });
 
-client.addListener("message#ketochat", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    youtubeTitle(from, message, "#ketochat", client);
-    calcWeight(from, message, "#ketochat", client);
-  }
-});
-
-client.addListener("message#gatsbyjs", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#gatsbyjs", client);
-    youtubeTitle(from, message, "#gatsbyjs", client);
-  }
-});
-
-client.addListener("message#nextjs", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#nextjs", client);
-    youtubeTitle(from, message, "#nextjs", client);
-  }
-});
-
-client.addListener("pm", function (from, message) {
-  client.say("#theskillwithin", `${from}: ${message}`);
-});
-
 clientLibera.addListener("pm", function (from, message) {
   clientLibera.say("#theskillwithin", `${from}: ${message}`);
-});
-
-client.addListener("error", (message) => {
-  console.error("IRC Error: ", message);
 });
 
 clientLibera.addListener("error", (message) => {
