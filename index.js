@@ -202,7 +202,7 @@ clientLibera.addListener("message#javascript", (from, message) => {
   if (!ignoreList.includes(from.toLowerCase())) {
     greekQuestionMark(from, message, "#javascript", clientLibera);
     youtubeTitle(from, message, "#javascript", clientLibera);
-    calcWeight(from, message, "##ketochat", clientLibera);
+    calcWeight(from, message, "#javascript", clientLibera);
   }
 });
 
