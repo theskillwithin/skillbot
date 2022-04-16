@@ -111,6 +111,12 @@ const isModToQuarterUp = (number) => {
   return isModToQuarterUp;
 };
 
+const thankYouMayIHaveAHandShake = (from, message, channel, c) => {
+  if (message.toLowerCase().includes("thank you may i have a handshake")) {
+    return c.say(channel, `/me shakes ${from} hand`);
+  }
+};
+
 const calcWeight = (from, message, channel, c) => {
   if (message.charAt(0) === ">") {
     const kiloPoundsConversionNumber = 2.20462;
@@ -191,6 +197,7 @@ clientLibera.addListener("message#theskillwithin", (from, message) => {
     greekQuestionMark(from, message, "#theskillwithin", clientLibera);
     youtubeTitle(from, message, "#theskillwithin", clientLibera);
     calcWeight(from, message, "#theskillwithin", clientLibera);
+    thankYouMayIHaveAHandShake(from, message, "#theskillwithin", clientLibera);
   }
 });
 
