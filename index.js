@@ -219,7 +219,7 @@ clientLibera.addListener("message#severance", (from, message) => {
   if (!ignoreList.includes(from.toLowerCase())) {
     greekQuestionMark(from, message, "#severance", clientLibera);
     youtubeTitle(from, message, "#severance", clientLibera);
-    thankYouMayIHaveAHandShake(from, message, "#theskillwithin", clientLibera);
+    thankYouMayIHaveAHandShake(from, message, "#severance", clientLibera);
   }
 });
 
