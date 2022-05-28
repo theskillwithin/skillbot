@@ -215,6 +215,13 @@ clientLibera.addListener("message#javascript", (from, message) => {
   }
 });
 
+clientLibera.addListener("message#nextjs", (from, message) => {
+  if (!ignoreList.includes(from.toLowerCase())) {
+    greekQuestionMark(from, message, "#nextjs", clientLibera);
+    youtubeTitle(from, message, "#nextjs", clientLibera);
+  }
+});
+
 clientLibera.addListener("message#severance", (from, message) => {
   if (!ignoreList.includes(from.toLowerCase())) {
     greekQuestionMark(from, message, "#severance", clientLibera);
