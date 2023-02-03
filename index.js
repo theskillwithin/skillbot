@@ -24,6 +24,7 @@ const registerLibra = () => {
     clientLibera.join("#css");
     clientLibera.join("#severance");
     clientLibera.join("#typescript");
+    clientLibera.join("#gp");
   }, 10000);
 };
 
@@ -213,6 +214,13 @@ clientLibera.addListener("message#javascript", (from, message) => {
   if (!ignoreList.includes(from.toLowerCase())) {
     greekQuestionMark(from, message, "#javascript", clientLibera);
     youtubeTitle(from, message, "#javascript", clientLibera);
+  }
+});
+
+clientLibera.addListener("message#gp", (from, message) => {
+  if (!ignoreList.includes(from.toLowerCase())) {
+    greekQuestionMark(from, message, "#gp", clientLibera);
+    youtubeTitle(from, message, "#gp", clientLibera);
   }
 });
 
