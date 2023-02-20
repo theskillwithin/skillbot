@@ -115,7 +115,7 @@ const isModToQuarterUp = (number) => {
 
 const thankYouMayIHaveAHandShake = (from, message, channel, c) => {
   if (message.toLowerCase().includes("thank you may i have a handshake")) {
-    return c.say(channel, `/me shakes ${from} hand`);
+    return c.action(channel, `shakes ${from}'s hand`);
   }
 };
 
