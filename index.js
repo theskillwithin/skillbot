@@ -59,7 +59,7 @@ const greekQuestionMark = (from, message, channel, c) => {
 
 const getYoutubeId = (message) => {
   const regexp =
-    /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed|shorts\/|v\/)?)(?<id>([\w\-]+)(\S+)?)/g;
+    /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed|shorts|live\/|v\/)?)(?<id>[\w\-]+)/g;
   const exec = regexp.exec(message);
   return exec && exec.groups && exec.groups.id;
 };
