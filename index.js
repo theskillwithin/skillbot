@@ -86,7 +86,7 @@ const youtubeTitle = async (from, message, channel, c) => {
       .then((res) => {
         const title = get(res, "items[0].snippet.title", false);
         if (title) {
-          c.say(channel, `\x0304,01►\x03 \x0314,01YouTube\x03: ${title}`);
+          c.say(channel, `\x0304,01►\x03 \x0314,01YouTube\x03 :: ${title}`);
         }
         // if (/Rick Astley/gi.test(title)) {
         //   client.say(
