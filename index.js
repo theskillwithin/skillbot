@@ -16,7 +16,6 @@ const registerLibra = () => {
 
   setTimeout(() => {
     clientLibera.join("#theskillwithin");
-    clientLibera.join("#based");
     clientLibera.join("#javascript");
     clientLibera.join("##ketochat");
     clientLibera.join("#gatsbyjs");
@@ -253,14 +252,6 @@ clientLibera.addListener("message#severance", (from, message) => {
     greekQuestionMark(from, message, "#severance", clientLibera);
     youtubeTitle(from, message, "#severance", clientLibera);
     thankYouMayIHaveAHandShake(from, message, "#severance", clientLibera);
-  }
-});
-
-clientLibera.addListener("message#based", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#based", clientLibera);
-    youtubeTitle(from, message, "#based", clientLibera);
-    thankYouMayIHaveAHandShake(from, message, "#based", clientLibera);
   }
 });
 
