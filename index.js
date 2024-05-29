@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 "use strict";
-require("dotenv").config({ path: ".env" });
+require("dotenv").config();
 const irc = require("irc");
 const fetch = require("node-fetch");
 const get = require("lodash/get");
