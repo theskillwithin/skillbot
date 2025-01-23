@@ -16,7 +16,7 @@ const registerLibra = () => {
 
   setTimeout(() => {
     clientLibera.join("#theskillwithin");
-    clientLibera.join("#javascript");
+    // clientLibera.join("#javascript");
     clientLibera.join("##ketochat");
     clientLibera.join("#gatsbyjs");
     clientLibera.join("#nextjs");
@@ -213,12 +213,12 @@ clientLibera.addListener("message##ketochat", (from, message) => {
   }
 });
 
-clientLibera.addListener("message#javascript", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#javascript", clientLibera);
-    youtubeTitle(from, message, "#javascript", clientLibera);
-  }
-});
+// clientLibera.addListener("message#javascript", (from, message) => {
+//   if (!ignoreList.includes(from.toLowerCase())) {
+//     greekQuestionMark(from, message, "#javascript", clientLibera);
+//     youtubeTitle(from, message, "#javascript", clientLibera);
+//   }
+// });
 
 clientLibera.addListener("message#primate", (from, message) => {
   if (!ignoreList.includes(from.toLowerCase())) {
