@@ -23,6 +23,7 @@ const registerLibra = () => {
     clientLibera.join("#reactjs");
     clientLibera.join("#severance");
     clientLibera.join("##premiere");
+    clientLibera.join("##blackpilled");
     clientLibera.join("#typescript");
     clientLibera.join("#gp");
     clientLibera.join("#comedy");
@@ -260,6 +261,14 @@ clientLibera.addListener("message##premiere", (from, message) => {
     greekQuestionMark(from, message, "##premiere", clientLibera);
     youtubeTitle(from, message, "##premiere", clientLibera);
     thankYouMayIHaveAHandShake(from, message, "##premiere", clientLibera);
+  }
+});
+
+clientLibera.addListener("message##blackpilled", (from, message) => {
+  if (!ignoreList.includes(from.toLowerCase())) {
+    greekQuestionMark(from, message, "##blackpilled", clientLibera);
+    youtubeTitle(from, message, "##blackpilled", clientLibera);
+    thankYouMayIHaveAHandShake(from, message, "##blackpilled", clientLibera);
   }
 });
 
