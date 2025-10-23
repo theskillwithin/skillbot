@@ -28,7 +28,7 @@ const registerLibra = () => {
     clientLibera.join("#gp");
     clientLibera.join("#comedy");
     clientLibera.join("#primate");
-    clientLibera.join("##metal");
+    clientLibera.join("#metal");
   }, 10000);
 };
 
