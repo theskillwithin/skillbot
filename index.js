@@ -290,6 +290,12 @@ clientLibera.addListener("message#reactjs", (from, message) => {
   }
 });
 
+clientLibera.addListener("message#metal", (from, message) => {
+  if (!ignoreList.includes(from.toLowerCase())) {
+    youtubeTitle(from, message, "#metal", clientLibera);
+  }
+});
+
 clientLibera.addListener("pm", function (from, message) {
   clientLibera.say("#theskillwithin", `${from}: ${message}`);
 });
