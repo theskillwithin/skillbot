@@ -9,6 +9,10 @@ const clientLibera = new irc.Client("irc.libera.chat", "skillbot", {
   channels: ["#theskillwithin"],
   userName: "skillbot",
   realName: "skillbot",
+  port: 6697,
+  secure: true,
+  selfSigned: false,
+  certExpired: false,
 });
 
 const registerLibra = () => {
