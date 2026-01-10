@@ -143,6 +143,17 @@ const pasteCommand = (from, message, channel, c) => {
   }
 };
 
+const dontPasteCommand = (from, message, channel, c) => {
+  const lowerMessage = message.toLowerCase().trim();
+
+  // Match !don't paste or !dont paste
+  const dontPasteMatch = lowerMessage.match(/^!?(?:don'?t|dont)\s+paste$/);
+
+  if (dontPasteMatch) {
+    return c.say(channel, `gurrr can read your mind`);
+  }
+};
+
 const calcWeight = (from, message, channel, c) => {
   if (message.charAt(0) === ">") {
     const kiloPoundsConversionNumber = 2.20462;
@@ -225,6 +236,7 @@ clientLibera.addListener("message#theskillwithin", (from, message) => {
     calcWeight(from, message, "#theskillwithin", clientLibera);
     thankYouMayIHaveAHandShake(from, message, "#theskillwithin", clientLibera);
     pasteCommand(from, message, "#theskillwithin", clientLibera);
+    dontPasteCommand(from, message, "#theskillwithin", clientLibera);
   }
 });
 
@@ -261,6 +273,7 @@ clientLibera.addListener("message#typescript", (from, message) => {
     greekQuestionMark(from, message, "#typescript", clientLibera);
     youtubeTitle(from, message, "#typescript", clientLibera);
     pasteCommand(from, message, "#typescript", clientLibera);
+    dontPasteCommand(from, message, "#typescript", clientLibera);
   }
 });
 
@@ -306,6 +319,7 @@ clientLibera.addListener("message#reactjs", (from, message) => {
     greekQuestionMark(from, message, "#reactjs", clientLibera);
     youtubeTitle(from, message, "#reactjs", clientLibera);
     pasteCommand(from, message, "#reactjs", clientLibera);
+    dontPasteCommand(from, message, "#reactjs", clientLibera);
   }
 });
 
