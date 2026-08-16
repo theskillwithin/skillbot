@@ -247,8 +247,14 @@ const handlersFor = (target) => {
   return name ? channels[name] : undefined;
 };
 
+const HOME_CHANNEL = "#theskillwithin";
+
 client.on("registered", () => {
   client.say("NickServ", `IDENTIFY ${NICK} ${process.env.IDENTIFY}`);
+
+  // The home channel is joined right away so private messages can be relayed
+  // immediately; the rest wait for NickServ to finish identifying us.
+  client.join(HOME_CHANNEL);
 
   setTimeout(() => {
     Object.keys(channels).forEach((channel) => {
@@ -257,17 +263,39 @@ client.on("registered", () => {
   }, 10000);
 });
 
+// irc-framework does not retry the nick by itself, and without a nick the
+// server never sends us a welcome, so nothing else would ever happen.
+const MAX_NICK_ATTEMPTS = 3;
+let nickAttempts = 0;
+
+client.on("nick in use", (event) => {
+  if (nickAttempts >= MAX_NICK_ATTEMPTS) {
+    console.error(`Nick ${event.nick} is in use, giving up on renaming`);
+    return;
+  }
+
+  nickAttempts += 1;
+  const nick = `${NICK}${"_".repeat(nickAttempts)}`;
+  console.error(`Nick ${event.nick} is in use, trying ${nick}`);
+  client.changeNick(nick);
+});
+
 client.on("privmsg", (event) => {
   const from = event.nick;
   const { target, message } = event;
 
-  if (ignoreList.includes(String(from).toLowerCase())) return;
+  // Messages addressed to a subset of a channel (`@#channel`, `+#channel`)
+  // arrive with the prefix stripped. Answering them would reply to everyone.
+  if (event.target_group) return;
 
-  // A private message to the bot gets relayed to the main channel.
-  if (target === client.user.nick) {
-    client.say("#theskillwithin", `${from}: ${message}`);
+  // A private message to the bot gets relayed to the main channel. This
+  // deliberately runs before the ignore list, matching the old behaviour.
+  if (client.caseCompare(target, client.user.nick)) {
+    client.say(HOME_CHANNEL, `${from}: ${message}`);
     return;
   }
+
+  if (ignoreList.includes(String(from).toLowerCase())) return;
 
   const handlers = handlersFor(target);
   if (!handlers) return;
@@ -286,7 +314,11 @@ client.on("irc error", (event) => {
 });
 
 client.on("socket close", () => {
-  console.error("IRC socket closed");
+  console.error("IRC socket closed, reconnecting");
+});
+
+client.on("close", () => {
+  console.error("IRC connection closed for good");
 });
 
 client.connect({
@@ -298,8 +330,10 @@ client.connect({
   username: NICK,
   gecos: NICK,
   auto_reconnect: true,
-  auto_reconnect_wait: 4000,
-  auto_reconnect_max_retries: 10,
+  // The old client retried forever; keep that rather than giving up and
+  // sitting there disconnected after a long outage.
+  auto_reconnect_max_retries: Infinity,
+  auto_reconnect_max_wait: 300000,
   ping_interval: 30,
   ping_timeout: 120,
 });

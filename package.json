@@ -4,7 +4,7 @@
   "description": "a bot that prevents chaos",
   "main": "index.js",
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
   },
   "scripts": {
     "start": "node index.js",

@@ -21,11 +21,23 @@ class FakeClient extends EventEmitter {
     this.user = { nick: "skillbot" };
     this.joined = [];
     this.options = undefined;
+    this.nickChanges = [];
   }
 
   connect(options) {
     this.options = options;
     this.user.nick = options.nick;
+  }
+
+  // irc-framework compares nicks and channels with the server's casemapping;
+  // a plain lowercase comparison is close enough for the test double.
+  caseCompare(a, b) {
+    return String(a).toLowerCase() === String(b).toLowerCase();
+  }
+
+  // The real client only updates user.nick once the server confirms it.
+  changeNick(nick) {
+    this.nickChanges.push(nick);
   }
 
   say(target, message) {
@@ -68,9 +80,9 @@ process.env.YOUTUBE = "test-key";
 
 require("./index.js");
 
-const privmsg = (nick, target, message) => {
+const privmsg = (nick, target, message, extra = {}) => {
   sent.length = 0;
-  bot.emit("privmsg", { nick, target, message });
+  bot.emit("privmsg", { nick, target, message, ...extra });
 };
 
 // Let the async YouTube handler settle before asserting.
@@ -93,7 +105,11 @@ test("identifies with NickServ and joins every channel on register", (t) => {
   assert.deepEqual(sent, [
     { type: "say", target: "NickServ", message: "IDENTIFY skillbot hunter2" },
   ]);
-  assert.deepEqual(bot.joined, [], "waits before joining");
+  assert.deepEqual(
+    bot.joined,
+    ["#theskillwithin"],
+    "joins the home channel immediately so PMs can be relayed"
+  );
 
   t.mock.timers.tick(10000);
 
@@ -101,7 +117,26 @@ test("identifies with NickServ and joins every channel on register", (t) => {
   assert.ok(bot.joined.includes("##ketochat"));
   assert.ok(bot.joined.includes("#gatsbyjs"));
   assert.ok(bot.joined.includes("#adhd"));
-  assert.equal(bot.joined.length, 14);
+  assert.equal(new Set(bot.joined).size, 14);
+});
+
+test("picks a new nick when the configured one is taken", () => {
+  bot.nickChanges.length = 0;
+
+  bot.emit("nick in use", { nick: "skillbot" });
+  bot.emit("nick in use", { nick: "skillbot_" });
+
+  assert.deepEqual(bot.nickChanges, ["skillbot_", "skillbot__"]);
+});
+
+test("gives up renaming rather than looping forever", () => {
+  bot.nickChanges.length = 0;
+
+  for (let i = 0; i < 10; i += 1) {
+    bot.emit("nick in use", { nick: "skillbot" });
+  }
+
+  assert.equal(bot.nickChanges.length, 1, "only one attempt left of the three");
 });
 
 test("warns about greek question marks", () => {
@@ -241,4 +276,36 @@ test("relays private messages to the main channel", () => {
       message: "someone: hello there",
     },
   ]);
+});
+
+test("relays private messages from bots on the ignore list too", () => {
+  // The ignore list only ever applied to channel messages.
+  privmsg("jellobot", "skillbot", "eval result");
+
+  assert.deepEqual(sent, [
+    {
+      type: "say",
+      target: "#theskillwithin",
+      message: "jellobot: eval result",
+    },
+  ]);
+});
+
+test("relays private messages after the server renamed us", () => {
+  bot.user.nick = "skillbot_";
+  privmsg("someone", "SkillBot_", "hello there");
+
+  assert.equal(sent.length, 1);
+  assert.equal(sent[0].target, "#theskillwithin");
+  bot.user.nick = "skillbot";
+});
+
+test("ignores messages aimed at a subset of a channel", () => {
+  // `PRIVMSG @#theskillwithin` arrives with the prefix stripped, so replying
+  // would leak an ops-only message to the whole channel.
+  privmsg("someone", "#theskillwithin", "const a = 1\u037E", {
+    target_group: "@",
+  });
+
+  assert.deepEqual(sent, []);
 });
