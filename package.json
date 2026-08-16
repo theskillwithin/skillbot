@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "a bot that prevents chaos",
   "main": "index.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
@@ -17,9 +21,8 @@
   },
   "homepage": "https://github.com/theskillwithin/skillbot#readme",
   "dependencies": {
-    "dotenv": "^8.2.0",
-    "irc": "^0.5.2",
-    "lodash": "^4.17.19",
-    "node-fetch": "^2.6.0"
+    "dotenv": "^17.4.2",
+    "irc-framework": "^4.14.0",
+    "lodash": "^4.18.1"
   }
 }

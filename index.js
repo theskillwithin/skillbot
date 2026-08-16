@@ -1,45 +1,15 @@
 #!/usr/bin/env node
 "use strict";
-require("dotenv").config();
-const irc = require("irc");
-const fetch = require("node-fetch");
+require("dotenv").config({ quiet: true });
+const IRC = require("irc-framework");
 const get = require("lodash/get");
 
-const clientLibera = new irc.Client("irc.libera.chat", "skillbot", {
-  channels: ["#theskillwithin"],
-  userName: "skillbot",
-  realName: "skillbot",
-  port: 6697,
-  secure: true,
-  selfSigned: false,
-  certExpired: false,
-});
+const SERVER = "irc.libera.chat";
+const NICK = "skillbot";
 
-const registerLibra = () => {
-  clientLibera.say("NickServ", `IDENTIFY skillbot ${process.env.IDENTIFY}`);
-
-  setTimeout(() => {
-    clientLibera.join("#theskillwithin");
-    // clientLibera.join("#javascript");
-    clientLibera.join("##ketochat");
-    clientLibera.join("#gatsbyjs");
-    clientLibera.join("#nextjs");
-    clientLibera.join("#reactjs");
-    clientLibera.join("#severance");
-    clientLibera.join("##premiere");
-    clientLibera.join("##blackpilled");
-    clientLibera.join("#typescript");
-    clientLibera.join("#gp");
-    clientLibera.join("#comedy");
-    clientLibera.join("#primate");
-    clientLibera.join("#metal");
-    clientLibera.join("#adhd");
-  }, 10000);
-};
+const client = new IRC.Client();
 
 const ignoreList = ["skillbot", "jellobot", "ecmabot"];
-
-clientLibera.addListener("registered", registerLibra);
 
 const greekQuestionMark = (from, message, channel, c) => {
   if (/\u037E/g.test(message)) {
@@ -77,32 +47,40 @@ const youtubeURL = (id) =>
 
 const youtubeTitle = async (from, message, channel, c) => {
   const id = getYoutubeId(message);
-  if (id) {
-    const splitTimeFromId = id.split("?t=");
+  if (!id) return;
 
-    const idWithoutTime = splitTimeFromId[0];
+  const splitTimeFromId = id.split("?t=");
 
-    // const time = splitTimeFromId[1] && convertSecondsToTime(splitTimeFromId[1]);
+  const idWithoutTime = splitTimeFromId[0];
 
-    await fetch(youtubeURL(idWithoutTime), {
+  // const time = splitTimeFromId[1] && convertSecondsToTime(splitTimeFromId[1]);
+
+  try {
+    const response = await fetch(youtubeURL(idWithoutTime), {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-    })
-      .then((r) => r.json())
-      .then((res) => {
-        const title = get(res, "items[0].snippet.title", false);
-        if (title) {
-          c.say(channel, `\x0304,01►\x03 \x0314,01YouTube\x03 :: ${title}`);
-        }
-        // if (/Rick Astley/gi.test(title)) {
-        //   client.say(
-        //     channel,
-        //     `Warning! ${from}: That video may possibly be a Rick Roll!`
-        //   );
-        // }
-      });
+    });
+
+    if (!response.ok) {
+      console.error(`YouTube API error: ${response.status} for ${idWithoutTime}`);
+      return;
+    }
+
+    const res = await response.json();
+    const title = get(res, "items[0].snippet.title", false);
+    if (title) {
+      c.say(channel, `\x0304,01►\x03 \x0314,01YouTube\x03 :: ${title}`);
+    }
+    // if (/Rick Astley/gi.test(title)) {
+    //   c.say(
+    //     channel,
+    //     `Warning! ${from}: That video may possibly be a Rick Roll!`
+    //   );
+    // }
+  } catch (error) {
+    console.error("YouTube lookup failed: ", error);
   }
 };
 
@@ -229,116 +207,99 @@ const calcWeight = (from, message, channel, c) => {
   }
 };
 
-clientLibera.addListener("message#theskillwithin", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#theskillwithin", clientLibera);
-    youtubeTitle(from, message, "#theskillwithin", clientLibera);
-    calcWeight(from, message, "#theskillwithin", clientLibera);
-    thankYouMayIHaveAHandShake(from, message, "#theskillwithin", clientLibera);
-    pasteCommand(from, message, "#theskillwithin", clientLibera);
-    dontPasteCommand(from, message, "#theskillwithin", clientLibera);
+// Channels the bot joins, and which handlers run on messages in each one.
+// A channel with an empty handler list is joined but otherwise ignored.
+const channels = {
+  "#theskillwithin": [
+    greekQuestionMark,
+    youtubeTitle,
+    calcWeight,
+    thankYouMayIHaveAHandShake,
+    pasteCommand,
+    dontPasteCommand,
+  ],
+  "##ketochat": [youtubeTitle, calcWeight],
+  "#gatsbyjs": [],
+  "#nextjs": [greekQuestionMark, youtubeTitle],
+  "#reactjs": [greekQuestionMark, youtubeTitle, pasteCommand, dontPasteCommand],
+  "#severance": [greekQuestionMark, youtubeTitle, thankYouMayIHaveAHandShake],
+  "##premiere": [greekQuestionMark, youtubeTitle, thankYouMayIHaveAHandShake],
+  "##blackpilled": [greekQuestionMark, youtubeTitle, thankYouMayIHaveAHandShake],
+  "#typescript": [
+    greekQuestionMark,
+    youtubeTitle,
+    pasteCommand,
+    dontPasteCommand,
+  ],
+  "#gp": [greekQuestionMark, youtubeTitle],
+  "#comedy": [youtubeTitle],
+  "#primate": [greekQuestionMark, youtubeTitle],
+  "#metal": [youtubeTitle],
+  "#adhd": [youtubeTitle],
+  // "#javascript": [greekQuestionMark, youtubeTitle],
+};
+
+const handlersFor = (target) => {
+  const name = Object.keys(channels).find(
+    (channel) => channel.toLowerCase() === String(target).toLowerCase()
+  );
+
+  return name ? channels[name] : undefined;
+};
+
+client.on("registered", () => {
+  client.say("NickServ", `IDENTIFY ${NICK} ${process.env.IDENTIFY}`);
+
+  setTimeout(() => {
+    Object.keys(channels).forEach((channel) => {
+      client.join(channel);
+    });
+  }, 10000);
+});
+
+client.on("privmsg", (event) => {
+  const from = event.nick;
+  const { target, message } = event;
+
+  if (ignoreList.includes(String(from).toLowerCase())) return;
+
+  // A private message to the bot gets relayed to the main channel.
+  if (target === client.user.nick) {
+    client.say("#theskillwithin", `${from}: ${message}`);
+    return;
   }
+
+  const handlers = handlersFor(target);
+  if (!handlers) return;
+
+  handlers.forEach((handler) => {
+    try {
+      handler(from, message, target, client);
+    } catch (error) {
+      console.error("Handler error: ", error);
+    }
+  });
 });
 
-clientLibera.addListener("message##ketochat", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    youtubeTitle(from, message, "##ketochat", clientLibera);
-    calcWeight(from, message, "##ketochat", clientLibera);
-  }
+client.on("irc error", (event) => {
+  console.error("IRC Error: ", event);
 });
 
-// clientLibera.addListener("message#javascript", (from, message) => {
-//   if (!ignoreList.includes(from.toLowerCase())) {
-//     greekQuestionMark(from, message, "#javascript", clientLibera);
-//     youtubeTitle(from, message, "#javascript", clientLibera);
-//   }
-// });
-
-clientLibera.addListener("message#primate", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#primate", clientLibera);
-    youtubeTitle(from, message, "#primate", clientLibera);
-  }
+client.on("socket close", () => {
+  console.error("IRC socket closed");
 });
 
-clientLibera.addListener("message#gp", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#gp", clientLibera);
-    youtubeTitle(from, message, "#gp", clientLibera);
-  }
-});
-
-clientLibera.addListener("message#typescript", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#typescript", clientLibera);
-    youtubeTitle(from, message, "#typescript", clientLibera);
-    pasteCommand(from, message, "#typescript", clientLibera);
-    dontPasteCommand(from, message, "#typescript", clientLibera);
-  }
-});
-
-clientLibera.addListener("message#nextjs", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#nextjs", clientLibera);
-    youtubeTitle(from, message, "#nextjs", clientLibera);
-  }
-});
-
-clientLibera.addListener("message#severance", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#severance", clientLibera);
-    youtubeTitle(from, message, "#severance", clientLibera);
-    thankYouMayIHaveAHandShake(from, message, "#severance", clientLibera);
-  }
-});
-
-clientLibera.addListener("message##premiere", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "##premiere", clientLibera);
-    youtubeTitle(from, message, "##premiere", clientLibera);
-    thankYouMayIHaveAHandShake(from, message, "##premiere", clientLibera);
-  }
-});
-
-clientLibera.addListener("message##blackpilled", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "##blackpilled", clientLibera);
-    youtubeTitle(from, message, "##blackpilled", clientLibera);
-    thankYouMayIHaveAHandShake(from, message, "##blackpilled", clientLibera);
-  }
-});
-
-clientLibera.addListener("message#comedy", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    youtubeTitle(from, message, "#comedy", clientLibera);
-  }
-});
-
-clientLibera.addListener("message#reactjs", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    greekQuestionMark(from, message, "#reactjs", clientLibera);
-    youtubeTitle(from, message, "#reactjs", clientLibera);
-    pasteCommand(from, message, "#reactjs", clientLibera);
-    dontPasteCommand(from, message, "#reactjs", clientLibera);
-  }
-});
-
-clientLibera.addListener("message#metal", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    youtubeTitle(from, message, "#metal", clientLibera);
-  }
-});
-
-clientLibera.addListener("message#adhd", (from, message) => {
-  if (!ignoreList.includes(from.toLowerCase())) {
-    youtubeTitle(from, message, "#adhd", clientLibera);
-  }
-});
-
-clientLibera.addListener("pm", function (from, message) {
-  clientLibera.say("#theskillwithin", `${from}: ${message}`);
-});
-
-clientLibera.addListener("error", (message) => {
-  console.error("IRC Error: ", message);
+client.connect({
+  host: SERVER,
+  port: 6697,
+  tls: true,
+  rejectUnauthorized: true,
+  nick: NICK,
+  username: NICK,
+  gecos: NICK,
+  auto_reconnect: true,
+  auto_reconnect_wait: 4000,
+  auto_reconnect_max_retries: 10,
+  ping_interval: 30,
+  ping_timeout: 120,
 });
