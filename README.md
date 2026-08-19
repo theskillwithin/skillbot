@@ -13,7 +13,8 @@ It watches the channels it joins and responds to a handful of things:
 
 ## Setup
 
-Requires Node.js 18 or newer (the bot uses the built-in `fetch`).
+Requires Node.js 24 or newer (see `.nvmrc`). The bot uses the built-in
+`fetch` and the built-in test runner.
 
 ```bash
 npm install
