@@ -3,6 +3,26 @@
 This release swaps the IRC client library and requires **Node.js 24**. There is
 no database and no state to migrate — the upgrade is a reinstall and a restart.
 
+## 0. Authentication moved to SASL
+
+The bot now identifies with **SASL** during connection registration instead of
+messaging NickServ after connecting.
+
+Nothing new to configure — the same `IDENTIFY` secret is reused as the SASL
+password. It is now required at startup: the bot exits immediately with
+`IDENTIFY is not set` rather than silently running unidentified.
+
+Why: the old flow sent `IDENTIFY` and then joined on a fixed 10-second timer,
+with `#theskillwithin` joined immediately. A timer is a guess, not a
+confirmation — whenever services lagged, joins went out before identification
+completed and `+r` channels rejected them silently, leaving the bot in fewer
+channels with nothing in the logs. SASL completes before registration
+finishes, so joining while unidentified is no longer possible.
+
+If authentication fails the bot now disconnects and logs
+`SASL authentication failed (<reason>)` rather than carrying on unidentified.
+Check that first if it starts looping on reconnect after this upgrade.
+
 ## 1. Node.js 24
 
 `node-fetch` is gone; the bot uses the built-in `fetch`. Node 24 is the current

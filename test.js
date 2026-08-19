@@ -96,28 +96,55 @@ test("connects to libera over TLS as skillbot", () => {
   assert.equal(bot.options.nick, "skillbot");
 });
 
-test("identifies with NickServ and joins every channel on register", (t) => {
-  t.mock.timers.enable({ apis: ["setTimeout"] });
+test("authenticates with SASL during connection registration", () => {
+  // SASL is negotiated as part of CAP, before registration completes, so the
+  // server has already identified us by the time "registered" fires. This is
+  // what makes it safe to join without waiting on NickServ.
+  assert.deepEqual(bot.options.account, {
+    account: "skillbot",
+    password: "hunter2",
+  });
+
+  assert.equal(
+    bot.options.sasl_disconnect_on_fail,
+    true,
+    "never proceed unidentified - a failed SASL must not fall through to joining"
+  );
+});
+
+test("joins every channel on register without waiting on NickServ", () => {
   sent.length = 0;
+  bot.joined.length = 0;
 
   bot.emit("registered");
 
-  assert.deepEqual(sent, [
-    { type: "say", target: "NickServ", message: "IDENTIFY skillbot hunter2" },
-  ]);
   assert.deepEqual(
-    bot.joined,
-    ["#theskillwithin"],
-    "joins the home channel immediately so PMs can be relayed"
+    sent,
+    [],
+    "SASL already identified us, so no NickServ IDENTIFY is sent"
   );
-
-  t.mock.timers.tick(10000);
 
   assert.ok(bot.joined.includes("#theskillwithin"));
   assert.ok(bot.joined.includes("##ketochat"));
   assert.ok(bot.joined.includes("#gatsbyjs"));
   assert.ok(bot.joined.includes("#adhd"));
-  assert.equal(new Set(bot.joined).size, 14);
+  assert.equal(
+    new Set(bot.joined).size,
+    14,
+    "every channel is joined, each exactly once"
+  );
+});
+
+test("never sends the account password in a channel-visible message", () => {
+  sent.length = 0;
+  bot.joined.length = 0;
+
+  bot.emit("registered");
+
+  assert.ok(
+    !sent.some((entry) => String(entry.message).includes("hunter2")),
+    "the password must only travel via SASL, never as a PRIVMSG"
+  );
 });
 
 test("picks a new nick when the configured one is taken", () => {

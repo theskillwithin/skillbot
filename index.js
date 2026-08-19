@@ -250,17 +250,25 @@ const handlersFor = (target) => {
 const HOME_CHANNEL = "#theskillwithin";
 
 client.on("registered", () => {
-  client.say("NickServ", `IDENTIFY ${NICK} ${process.env.IDENTIFY}`);
+  // SASL identifies us during CAP negotiation, before registration completes,
+  // so by the time we get here the server already knows who we are. That is
+  // what lets us join straight away.
+  //
+  // The old NickServ flow could not make that guarantee: it fired IDENTIFY and
+  // then joined on a fixed timer, which is a guess rather than a confirmation.
+  // Whenever services lagged, the joins went out unidentified and +r channels
+  // rejected them silently.
+  Object.keys(channels).forEach((channel) => {
+    client.join(channel);
+  });
+});
 
-  // The home channel is joined right away so private messages can be relayed
-  // immediately; the rest wait for NickServ to finish identifying us.
-  client.join(HOME_CHANNEL);
-
-  setTimeout(() => {
-    Object.keys(channels).forEach((channel) => {
-      client.join(channel);
-    });
-  }, 10000);
+// With sasl_disconnect_on_fail the client drops the connection rather than
+// carrying on unidentified, so surface why before it reconnects.
+client.on("sasl failed", (event) => {
+  console.error(
+    `SASL authentication failed (${event.reason}) - check the IDENTIFY secret`
+  );
 });
 
 // irc-framework does not retry the nick by itself, and without a nick the
@@ -321,6 +329,13 @@ client.on("close", () => {
   console.error("IRC connection closed for good");
 });
 
+// Without a secret SASL cannot succeed, and sasl_disconnect_on_fail would turn
+// that into a silent reconnect loop. Say so plainly instead.
+if (!process.env.IDENTIFY) {
+  console.error("IDENTIFY is not set - cannot authenticate. Refusing to start.");
+  process.exit(1);
+}
+
 client.connect({
   host: SERVER,
   port: 6697,
@@ -329,6 +344,11 @@ client.connect({
   nick: NICK,
   username: NICK,
   gecos: NICK,
+  // Identify as part of connection registration rather than messaging NickServ
+  // afterwards, so we are never joined to a channel while unidentified.
+  account: { account: NICK, password: process.env.IDENTIFY },
+  // Joining unidentified is the bug this replaces; fail loudly instead.
+  sasl_disconnect_on_fail: true,
   auto_reconnect: true,
   // The old client retried forever; keep that rather than giving up and
   // sitting there disconnected after a long outage.
